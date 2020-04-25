@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "minimap2_mpi_example"
+echo "target file:$1"
+echo "query file:$2"
+#echo "the number of query file divisions:$3"
+echo "process_num:$3"
+echo "your machinefile:$4"
+echo "out_file:$5"
+echo "\n"
+
+# split sequence file 
+echo "1. starting split sequence file..."
+rm -rf "${2}_all_part"
+mkdir "${2}_all_part"
+cp $2 "${2}_all_part/rare_file.fq"
+cd "${2}_all_part"
+line_num=$(cat rare_file.fq|wc -l)
+line_per_num=`expr $line_num / $3 + 1`
+line_per_num=`expr $line_per_num + 4 - $line_per_num % 4` 
+split -l $line_per_num rare_file.fq -d -a 4 query_
+echo "1. finished."
+
+# run minimap2_mpi
+echo "2. minimap2_mpi running"
+query=$(pwd)
+cd -
+mpirun -machinefile $4 -np $3 ./minimap2 -t 10 -x ava-ont $1 $query/query_ > $5
+#./minimap2 -t 10 -x ava-ont $1 $query/query_ > ont.paf
+echo "2. finished."
