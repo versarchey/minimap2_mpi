@@ -20,7 +20,9 @@ note: minimap2_mpi is a bash file. Essentially, it's a variants of "./minimap2 -
 # Disadvantages
 1. 
 Although we split the query file and run different parts on different nodes, the memory consumption don't have a significant improvement. Because the main  memory consumption come from the index established by target file, and every node need save the index.
+
 2.
 The method of spliting could cause the loss of several reads sometimes.
+
 3.
 Compared with single-process output, the order of simultaneous output of multiple processes is uncertain. So the results of genomic assembly isn't unique. But the output's size is certain. So the output have all informations of alignment. If you want make the result unique, you should make every node have own outfile and merge them in order.  
